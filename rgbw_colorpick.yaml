@@ -1,0 +1,158 @@
+blueprint:
+  name: RGBW colorpick
+  description: Gebruikt een dropdown helper, trigger en lamp om RGBW waardes te activeren.
+  domain: automation
+  input:
+    light_switch:
+      name: Lichtschakelaar
+      description: De entity die achter de fysieke schakelaar zit.
+      selector:
+        entity:
+          domain: light
+    target_light:
+      name: Verlichting
+      description: De RGBW-controller die voor de verlichting gebruikt wordt.
+      selector:
+        entity:
+          domain: light
+    opslag_var:
+      name: Opslagvariabele
+      description: De dropdown-helper met de kleurnamen Rood, Roze, Oranje, Geel, Groen, Azur, Blauw en Paars.
+      selector:
+        entity:
+          domain: input_select
+trigger:
+- platform: device
+  device_id: !input light_switch
+  domain: zwave_js
+  type: event.value_notification.scene_activation
+  property: sceneId
+  property_key:
+  endpoint: 0
+  command_class: 43
+  subtype: Endpoint 0
+  value: 14
+- platform: state
+  entity_id: !input opslag_var
+condition: []
+action:
+- if:
+  - condition: state
+    entity_id: !input opslag_var
+    state: Rood
+  then:
+  - service: light.turn_on
+    data:
+      rgbw_color:
+      - 255
+      - 0
+      - 0
+      - 0
+    target:
+      entity_id: !input target_light
+  else:
+  - if:
+    - condition: state
+      entity_id: !input opslag_var
+      state: Roze
+    then:
+    - service: light.turn_on
+      data:
+        rgbw_color:
+        - 255
+        - 10
+        - 10
+        - 0
+      target:
+        entity_id: !input target_light
+    else:
+    - if:
+      - condition: state
+        entity_id: !input opslag_var
+        state: Oranje
+      then:
+      - service: light.turn_on
+        data:
+          rgbw_color:
+          - 255
+          - 70
+          - 0
+          - 0
+        target:
+          entity_id: !input target_light
+      else:
+      - if:
+        - condition: state
+          entity_id: !input opslag_var
+          state: Geel
+        then:
+        - service: light.turn_on
+          data:
+            rgbw_color:
+            - 255
+            - 255
+            - 0
+            - 0
+          target:
+            entity_id: !input target_light
+        else:
+        - if:
+          - condition: state
+            entity_id: !input opslag_var
+            state: Groen
+          then:
+          - service: light.turn_on
+            data:
+              rgbw_color:
+              - 0
+              - 255
+              - 0
+              - 0
+            target:
+              entity_id: !input target_light
+          else:
+          - if:
+            - condition: state
+              entity_id: !input opslag_var
+              state: Azur
+            then:
+            - service: light.turn_on
+              data:
+                rgbw_color:
+                - 0
+                - 150
+                - 99
+                - 0
+              target:
+                entity_id: !input target_light
+            else:
+            - if:
+              - condition: state
+                entity_id: !input opslag_var
+                state: Blauw
+              then:
+              - service: light.turn_on
+                data:
+                  rgbw_color:
+                  - 0
+                  - 0
+                  - 255
+                  - 0
+                target:
+                  entity_id: !input target_light
+              else:
+              - if:
+                - condition: state
+                  entity_id: !input opslag_var
+                  state: Paars
+                then:
+                - service: light.turn_on
+                  data:
+                    rgbw_color:
+                    - 255
+                    - 0
+                    - 255
+                    - 0
+                  target:
+                    entity_id: !input target_light
+mode: single
