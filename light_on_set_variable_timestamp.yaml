@@ -1,0 +1,53 @@
+blueprint:
+  name: Trigger tijd incl time-out opslaan in variabele
+  description: Timestamp wegschrijven op basis van de timestamp van het moment waarop de trigger plaatsvindt, samen met een optionele time-out in minuten. 
+  domain: automation
+  input:
+    light_switch:
+      name: Lichtschakelaar
+      description: Het apparaat dat achter de fysieke schakelaar zit.
+      selector:
+        device:
+    variable:
+      name: Variabele
+      description: De de variabele waar de timestamp in wordt opgeslagen.
+      selector:
+        entity:
+          domain: input_datetime
+    timeout_minutes:
+      name: Time-out 
+      description: De time-out na het bedienen van de schakelaar (in minuten) waarop de timestamp gebaseerd wordt.
+      default: 30
+      selector:
+        number:
+          min: 0
+          max: 300
+    sa_value:
+      name: Scene-activatienummer 
+      description: Het nummer dat het de bewuste klik wordt doorgestuurd, bijvoorbeeld 10, 11, 14, 23, 24, 16, 26 of 25.
+      default: 0
+      selector:
+        number:
+          min: 0
+          max: 100
+trigger:
+- platform: device
+  device_id: !input light_switch
+  domain: zwave_js
+  type: event.value_notification.scene_activation
+  property: sceneId
+  property_key:
+  endpoint: 0
+  command_class: 43
+  subtype: Endpoint 0
+  value: !input sa_value
+condition: []
+variables:
+  timeout: !input timeout_minutes
+action:
+- service: input_datetime.set_datetime
+  data:
+    timestamp: '{{ now().timestamp() + (60*timeout) }}'
+  target:
+    entity_id: !input variable
+mode: queued
