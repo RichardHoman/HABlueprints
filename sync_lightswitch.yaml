@@ -1,0 +1,26 @@
+blueprint:
+  name: Lichtschakelaar synchronisatie
+  description: Schakelt een losse lichtschakelaar uit als de 
+  domain: automation
+  input:
+    light_switch:
+      name: Lichtschakelaar
+      description: De entity die achter de fysieke schakelaar zit.
+      selector:
+        device:
+    target_light:
+      name: Verlichting
+      description: De switch die op de lamp is aangesloten.
+      selector:
+        device:
+  trigger:
+  - platform: device
+    type: turned_off
+    device_id: !input target_light
+    domain: light
+  condition: []
+  action:
+  - type: turn_off
+    device_id: !input light_switch
+    domain: light
+  mode: single
