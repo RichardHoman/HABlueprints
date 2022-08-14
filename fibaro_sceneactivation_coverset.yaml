@@ -21,6 +21,7 @@ blueprint:
       description: De juiste entity in deze cover-controller.
       selector:
         entity:
+          domain: cover
     position:
       name: Positie 
       description: De gewenste stabnd van het doelapparaat (0 is helemaal dicht, 100 is helemaal open).
