@@ -1,0 +1,76 @@
+blueprint:
+  name: Fibaro SceneActivatie Cover bediening met stop-functie
+  description: Gebruikt de SceneActivatie mogelijkheid om een cover in de juiste stand te zetten.
+  domain: automation
+  input:
+    trigger:
+      name: Schakelaar
+      description: Het apparaat dat achter de fysieke schakelaar zit.
+      selector:
+        device:
+    sa_value:
+      name: Scene-activatienummer 
+      description: Het nummer dat het de bewuste klik wordt doorgestuurd, bijvoorbeeld 10, 11, 14, 23, 24, 16, 26 of 25.
+      default: 0
+      selector:
+        number:
+          min: 0
+          max: 100
+    target:
+      name: Doelapparaat
+      description: De cover-controller die op het doelapparaat is aangespoten.
+      selector:
+        device:
+    target_entity:
+      name: Doelapparaat entity
+      description: De juiste entity in deze cover-controller.
+      selector:
+        entity:
+          domain: cover
+    position:
+      name: Positie 
+      description: De gewenste stand van het doelapparaat (0 is helemaal dicht, 100 is helemaal open).
+      default: 1
+      selector:
+        number:
+          min: 0
+          max: 100
+    stop_movement:
+      name: Of, huidige beweging afbreken 
+      description: De stand van de cover op het moment van deze trigger vasthouden.
+      default: 0
+      selector:
+        select:
+          options:
+          - Ja
+          - Nee
+trigger:
+- platform: device
+  device_id: !input trigger
+  domain: zwave_js
+  type: event.value_notification.scene_activation
+  property: sceneId
+  property_key:
+  endpoint: 0
+  command_class: 43
+  subtype: Endpoint 0
+  value: !input sa_value
+condition: []
+variables:
+  stpmv: !input stop_movement
+action:
+- if:
+  - condition: template
+    value_template: '{{ stpmv == "Ja" }}'
+  then:
+  - service: cover.stop_cover
+    data: {}
+    target:
+      device_id: !input target
+  else:
+  - device_id: !input target
+    domain: cover
+    entity_id: !input target_entity
+    type: set_position
+    position: !input position
+mode: single
