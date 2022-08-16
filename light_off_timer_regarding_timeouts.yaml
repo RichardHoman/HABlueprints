@@ -1,0 +1,53 @@
+blueprint:
+  name: Licht aan met sensor
+  description: Licht aan met sensor, rekening houdend met licht aan en uit time-outs, nacht-mode en lux. 
+  domain: automation
+  input:
+    target_light:
+      name: Verlichting
+      description: De lichtbron die moet worden aangestuurd.
+      selector:
+        device:
+    pir_sensor_motion:
+      name: Bewegingssensor
+      description: De entity die achter de fysieke schakelaar zit.
+      selector:
+        entity:
+          domain: binary_sensor
+          device_class: motion
+    no_motion_delay:
+      name: Geen beweging time-out
+      description: Tijd zonder beweging voor het licht uit gaat
+      default: 10
+      selector:
+        number:
+          min: 0
+          max: 59
+    licht_aan_timer_eta_sensor:
+      name: Licht aan time-out ETA sensor
+      description: De sensor die de tijd geeft tot de time-out licht-aan verstrijkt.
+      selector:
+        entity:
+          domain: sensor
+trigger:
+- platform: state
+  entity_id: !input pir_sensor_motion
+  from: 'on'
+  to: 'off'
+  for:
+    hours: 0
+    minutes: 0
+    seconds: !input no_motion_delay
+- platform: numeric_state
+  entity_id: !input licht_uit_timer_eta_sensor
+  below: '0'
+condition:
+- condition: numeric_state
+  entity_id: !input licht_uit_timer_eta_sensor
+  below: '0'
+action:
+- service: light.turn_off
+  data: {}
+  target:
+    device_id: !input target_light
+mode: restart
