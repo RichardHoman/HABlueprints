@@ -69,6 +69,40 @@ blueprint:
         number:
           min: 0
           max: 100
+    extra_condition_one:
+      name: Condititie 1
+      description: Alleen uitvoeren als de boolean van deze conditie aan staat.
+      default: 0
+      selector:
+        select:
+          options:
+            - label: Niet gebruiken
+              value: '0'
+            - label: Gebruiken
+              value: '1'
+    extra_condition_one_bool:
+      name: Boolean 1
+      description: De boolean die hoort bij conditie 1
+      selector:
+        entity:
+          domain: input_boolean
+    extra_condition_two:
+      name: Condititie 2
+      description: Alleen uitvoeren als de boolean van deze conditie aan staat.
+      default: 0
+      selector:
+        select:
+          options:
+            - label: Niet gebruiken
+              value: '0'
+            - label: Gebruiken
+              value: '1'
+    extra_condition_two_bool:
+      name: Boolean 2
+      description: De boolean die hoort bij conditie 2
+      selector:
+        entity:
+          domain: input_boolean
 trigger:
 - platform: state
   entity_id: !input pir_sensor_motion
@@ -93,6 +127,22 @@ condition:
     - condition: state
       entity_id: !input dagnacht_helper
       state: day
+- condition: or
+  conditions:
+  - condition: state
+    entity_id: !input extra_condition_one
+    state: '0'
+  - condition: state
+    entity_id: !input extra_condition_one_bool
+    state: 'on'
+- condition: or
+  conditions:
+  - condition: state
+    entity_id: !input extra_condition_two
+    state: '0'
+  - condition: state
+    entity_id: !input extra_condition_two_bool
+    state: 'on'
 action:
 - if:
   - condition: state
