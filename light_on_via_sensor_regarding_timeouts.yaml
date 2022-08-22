@@ -77,9 +77,9 @@ blueprint:
         select:
           options:
             - label: Niet gebruiken
-              value: '0'
+              value: 0
             - label: Gebruiken
-              value: '1'
+              value: 1
     extra_condition_one_bool:
       name: Boolean 1
       description: De boolean die hoort bij conditie 1
@@ -94,9 +94,9 @@ blueprint:
         select:
           options:
             - label: Niet gebruiken
-              value: '0'
+              value: 0
             - label: Gebruiken
-              value: '1'
+              value: 1
     extra_condition_two_bool:
       name: Boolean 2
       description: De boolean die hoort bij conditie 2
@@ -131,7 +131,7 @@ condition:
   conditions:
   - condition: state
     entity_id: !input extra_condition_one
-    state: '0'
+    state: 1
   - condition: state
     entity_id: !input extra_condition_one_bool
     state: 'on'
@@ -139,7 +139,7 @@ condition:
   conditions:
   - condition: state
     entity_id: !input extra_condition_two
-    state: '0'
+    state: 1
   - condition: state
     entity_id: !input extra_condition_two_bool
     state: 'on'
