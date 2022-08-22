@@ -1,0 +1,163 @@
+blueprint:
+  name: Licht aan met sensor
+  description: Licht aan met sensor, rekening houdend met licht aan en uit time-outs, nacht-mode en lux. 
+  domain: automation
+  input:
+    target_light:
+      name: Verlichting
+      description: De lichtbron die moet worden aangestuurd.
+      selector:
+        device:
+    target_light_entity:
+      name: Verlichting entity
+      description: De lichtbron die moet worden aangestuurd.
+      selector:
+        entity:
+          domain: light
+    pir_sensor_motion:
+      name: Bewegingssensor
+      description: De entity die achter de fysieke schakelaar zit.
+      selector:
+        entity:
+          domain: binary_sensor
+          device_class: motion
+    pir_sensor_lux:
+      name: Lux-sensor
+      description: De entity die achter de fysieke schakelaar zit.
+      selector:
+        entity:
+          device_class: illuminance
+    lux_activation_limit:
+      name: Lux-grens voor activatie 
+      description: De gewenste lux-grens waaronder het licht wordt geactiveerd, ook overdag.
+      default: 10
+      selector:
+        number:
+          min: 0
+          max: 300
+    licht_uit_timer_eta_sensor:
+      name: Licht uit time-out ETA sensor
+      description: e sensor die de tijd geeft tot de time-out licht-uit verstrijkt.
+      selector:
+        entity:
+          domain: sensor
+    dagnacht_helper:
+      name: Helper met dag/nacht status
+      description: De dropdown-helper met de dag/nacht statusen.
+      selector:
+        entity:
+          domain: input_select
+    iemandbeneden_helper:
+      name: Helper met iemand beneden status
+      description: De helper die aangeeft of er nog activiteit in huis is ten behoeve van keuze voor helderheid.
+      selector:
+        entity:
+          domain: input_boolean
+    brightness_high:
+      name: Activatiehelderheid bij activiteit in huis
+      description: De gewenste helderheid van het doelapparaat bij het activeren.
+      default: 50
+      selector:
+        number:
+          min: 0
+          max: 100
+    brightness_low:
+      name: Activatiehelderheid bij geen activiteit in huis
+      description: De gewenste helderheid van het doelapparaat bij het activeren.
+      default: 5
+      selector:
+        number:
+          min: 0
+          max: 100
+    extra_condition_one:
+      name: Condititie 1
+      description: Alleen uitvoeren als de boolean van deze conditie aan staat.
+      default: 0
+      selector:
+        select:
+          options:
+            - label: Niet gebruiken
+              value: '0'
+            - label: Gebruiken
+              value: '1'
+    extra_condition_one_bool:
+      name: Boolean 1
+      description: De boolean die hoort bij conditie 1
+      selector:
+        entity:
+          domain: input_boolean
+    extra_condition_two:
+      name: Condititie 2
+      description: Alleen uitvoeren als de boolean van deze conditie aan staat.
+      default: 0
+      selector:
+        select:
+          options:
+            - label: Niet gebruiken
+              value: '0'
+            - label: Gebruiken
+              value: '1'
+    extra_condition_two_bool:
+      name: Boolean 2
+      description: De boolean die hoort bij conditie 2
+      selector:
+        entity:
+          domain: input_boolean
+trigger:
+- platform: state
+  entity_id: !input pir_sensor_motion
+  from: 'off'
+  to: 'on'
+condition:
+- condition: numeric_state
+  entity_id: !input licht_uit_timer_eta_sensor
+  below: '0'
+- condition: device
+  type: is_off
+  device_id: !input target_light
+  entity_id: !input target_light_entity
+  domain: light
+- condition: or
+  conditions:
+  - condition: numeric_state
+    entity_id: !input pir_sensor_lux
+    below: !input lux_activation_limit
+  - condition: not
+    conditions:
+    - condition: state
+      entity_id: !input dagnacht_helper
+      state: day
+- condition: or
+  conditions:
+  - condition: state
+    entity_id: !input extra_condition_one
+    state: '0'
+  - condition: state
+    entity_id: !input extra_condition_one_bool
+    state: 'on'
+- condition: or
+  conditions:
+  - condition: state
+    entity_id: !input extra_condition_two
+    state: '0'
+  - condition: state
+    entity_id: !input extra_condition_two_bool
+    state: 'on'
+action:
+- if:
+  - condition: state
+    entity_id: !input iemandbeneden_helper
+    state: 'on'
+  then:
+  - service: light.turn_on
+    data:
+      brightness_pct: !input brightness_high
+    target:
+      device_id: !input target_light
+  else:
+  - service: light.turn_on
+    data:
+      brightness_pct: !input brightness_low
+    target:
+      device_id: !input target_light
+mode: single
