@@ -1,6 +1,6 @@
 blueprint:
-  name: Licht aan met sensor
-  description: Licht aan met sensor, rekening houdend met licht aan en uit time-outs, nacht-mode en lux. 
+  name: Licht aan met sensor - optionele condities
+  description: Licht aan met sensor, rekening houdend met licht aan en uit time-outs, nacht-mode, lux en optionele condities.
   domain: automation
   input:
     target_light:
