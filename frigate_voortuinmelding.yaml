@@ -208,7 +208,7 @@ action:
             - device_id: !input notify_device
               domain: mobile_app
               type: notify
-              message: Er loopt iemand in de voortuin.
+              message: A {{ label }} was detected on the {{ camera_name }} camera.
               data:
                 tag: '{{ id }}'
                 group: frigate-notification-{{ camera }}
@@ -224,18 +224,18 @@ action:
                     }}'
                 actions:
                 - action: URI
-                  title: Bekijk de video
+                  title: View Clip
                   uri: '{{base_url}}/api/frigate/notifications/{{id}}/{{camera}}/clip.mp4'
                 - action: URI
-                  title: Bekijk de foto
+                  title: View Snapshot
                   uri: '{{base_url}}/api/frigate/notifications/{{id}}/snapshot.jpg'
                 - action: silence-{{ camera }}
-                  title: Geen meldingen meer
+                  title: Silence New Notifications
                   destructive: true
           default:
           - service: notify.{{ group_target }}
             data:
-              message: Er loopt iemand in de voortuin.
+              message: A {{ label }} was detected on the {{ camera_name }} camera.
               data:
                 tag: '{{ id }}'
                 group: frigate-notification-{{ camera }}
@@ -251,13 +251,13 @@ action:
                     }}'
                 actions:
                 - action: URI
-                  title: Bekijk de video
+                  title: View Clip
                   uri: '{{base_url}}/api/frigate/notifications/{{id}}/{{camera}}/clip.mp4'
                 - action: URI
-                  title: Bekijk de foto
+                  title: View Snapshot
                   uri: '{{base_url}}/api/frigate/notifications/{{id}}/snapshot.jpg'
                 - action: silence-{{ camera }}
-                  title: Geen meldingen meer
+                  title: Silence New Notifications
                   destructive: true
     - repeat:
         sequence:
@@ -304,7 +304,8 @@ action:
                 - device_id: !input notify_device
                   domain: mobile_app
                   type: notify
-                  message: Iemand {{ 'hangt rond' if loitering else 'is gedetecteerd' }} in de voortuin.
+                  message: A {{ label }} {{ 'is loitering' if loitering else 'was
+                    detected' }} on the {{ camera_name }} camera.
                   data:
                     tag: '{{ id }}{{''-loitering'' if loitering}}'
                     group: frigate-notification-{{ camera }}{{'-loitering' if loitering}}
@@ -321,18 +322,19 @@ action:
                         }}'
                     actions:
                     - action: URI
-                      title: Bekijk de video
+                      title: View Clip
                       uri: '{{base_url}}/api/frigate/notifications/{{id}}/{{camera}}/clip.mp4'
                     - action: URI
-                      title: Bekijk de foto
+                      title: View Snapshot
                       uri: '{{base_url}}/api/frigate/notifications/{{id}}/snapshot.jpg'
                     - action: silence-{{ camera }}
-                      title: Geen meldingen meer
+                      title: Silence New Notifications
                       destructive: true
               default:
               - service: notify.{{ group_target }}
                 data:
-                  message: Iemand {{ 'hangt rond' if loitering else 'is gedetecteerd' }} in de voortuin.
+                  message: A {{ label }} {{ 'is loitering' if loitering else 'was
+                    detected' }} on the {{ camera_name }} camera.
                   data:
                     tag: '{{ id }}{{''-loitering'' if loitering}}'
                     group: frigate-notification-{{ camera }}{{'-loitering' if loitering}}
@@ -349,13 +351,13 @@ action:
                         }}'
                     actions:
                     - action: URI
-                      title: Bekijk de video
+                      title: View Clip
                       uri: '{{base_url}}/api/frigate/notifications/{{id}}/{{camera}}/clip.mp4'
                     - action: URI
-                      title: Bekijk de foto
+                      title: View Snapshot
                       uri: '{{base_url}}/api/frigate/notifications/{{id}}/snapshot.jpg'
                     - action: silence-{{ camera }}
-                      title: Geen meldingen meer
+                      title: Silence New Notifications
                       destructive: true
         until: '{{ not wait.trigger or wait.trigger.payload_json[''type''] == ''end''
           }}'
