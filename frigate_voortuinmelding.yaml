@@ -1,5 +1,5 @@
 blueprint:
-  name: Frigate Notification (0.10.0)
+  name: Frigate Melding
   description: "## Frigate Mobile App Notification\n\nThis blueprint will send a notification
     to your device when a Frigate event for the selected camera is fired. The notification
     will initially include the thumbnail of the detection, but include an actionable
@@ -187,7 +187,7 @@ action:
         id: '{{ trigger.payload_json[''after''][''id''] }}'
         object: '{{ trigger.payload_json[''after''][''label''] }}'
         label: '{{ object | title }}'
-        initial_home: '{{ presence_entity != '''' and is_state(presence_entity, ''home'')
+        initial_home: '{{ presence_entity != '''' and is_state(presence_entity, ''on'')
           }}'
         initial_entered_zones: '{{ trigger.payload_json[''after''][''entered_zones'']
           }}'
@@ -208,7 +208,7 @@ action:
             - device_id: !input notify_device
               domain: mobile_app
               type: notify
-              message: Er is iemand gedetecteerd in de voortuin.
+              message: Er loopt iemand in de voortuin.
               data:
                 tag: '{{ id }}'
                 group: frigate-notification-{{ camera }}
@@ -235,7 +235,7 @@ action:
           default:
           - service: notify.{{ group_target }}
             data:
-              message: Er is iemand gedetecteerd in de voortuin.
+              message: Er loopt iemand in de voortuin.
               data:
                 tag: '{{ id }}'
                 group: frigate-notification-{{ camera }}
@@ -276,7 +276,7 @@ action:
               loiter_timer }}'
             new_snapshot: '{{ update_thumbnail and event[''before''][''snapshot_time'']
               != event[''after''][''snapshot_time''] }}'
-            home: '{{ presence_entity != '''' and is_state(presence_entity, ''home'')
+            home: '{{ presence_entity != '''' and is_state(presence_entity, ''on'')
               }}'
             presence_changed: '{{ presence_entity != '''' and as_datetime(event[''before''][''frame_time''])
               < states[presence_entity].last_changed }}'
@@ -304,7 +304,7 @@ action:
                 - device_id: !input notify_device
                   domain: mobile_app
                   type: notify
-                  message: Een persoon {{ 'hangt rond' if loitering else 'is gedetecteerd' }} in de voortuin.
+                  message: Iemand {{ 'hangt rond' if loitering else 'is gedetecteerd' }} in de voortuin.
                   data:
                     tag: '{{ id }}{{''-loitering'' if loitering}}'
                     group: frigate-notification-{{ camera }}{{'-loitering' if loitering}}
@@ -332,7 +332,7 @@ action:
               default:
               - service: notify.{{ group_target }}
                 data:
-                  message: Een persoon {{ 'hangt rond' if loitering else 'is gedetecteerd' }} in de voortuin.
+                  message: Iemand {{ 'hangt rond' if loitering else 'is gedetecteerd' }} in de voortuin.
                   data:
                     tag: '{{ id }}{{''-loitering'' if loitering}}'
                     group: frigate-notification-{{ camera }}{{'-loitering' if loitering}}
@@ -357,4 +357,5 @@ action:
                     - action: silence-{{ camera }}
                       title: Geen meldingen meer
                       destructive: true
-        until: '{{ not wait.trigger or wait.trigger.payload_json[''type''] == ''end'' }}'
+        until: '{{ not wait.trigger or wait.trigger.payload_json[''type''] == ''end''
+          }}'
