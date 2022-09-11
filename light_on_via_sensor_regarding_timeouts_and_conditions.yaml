@@ -47,6 +47,12 @@ blueprint:
       selector:
         entity:
           domain: input_select
+    iemandthuis_helper:
+      name: Helper met iemand thuis status
+      description: De helper die aangeeft of iemand thuis is om false-positives te verhelpen.
+      selector:
+        entity:
+          domain: input_boolean
     iemandbeneden_helper:
       name: Helper met iemand beneden status
       description: De helper die aangeeft of er nog activiteit in huis is ten behoeve van keuze voor helderheid.
@@ -109,6 +115,11 @@ trigger:
   from: 'off'
   to: 'on'
 condition:
+- condition: state
+  entity_id: !input iemandthuis_helper
+  state: 'on'
+  for:
+    seconds: 10
 - condition: numeric_state
   entity_id: !input licht_uit_timer_eta_sensor
   below: '0'
