@@ -1,5 +1,5 @@
 blueprint:
-  name: Licht aan met sensor
+  name: Licht aan met sensor - iemand thuis check
   description: Licht aan met sensor, rekening houdend met licht aan en uit time-outs, nacht-mode en lux.
   domain: automation
   input:
