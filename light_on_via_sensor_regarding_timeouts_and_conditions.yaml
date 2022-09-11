@@ -1,5 +1,5 @@
 blueprint:
-  name: Licht aan met sensor
+  name: Licht aan met sensor - Rekening houdend met time-outs, nachtmode, aanwezigheid, lux.
   description: Licht aan met sensor, rekening houdend met licht aan en uit time-outs, nacht-mode en lux. 
   domain: automation
   input:
