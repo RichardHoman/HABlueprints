@@ -22,7 +22,7 @@ blueprint:
       selector:
         number:
           min: 0
-          max: 59
+          max: 600
     licht_uit_timer_eta_sensor:
       name: Licht aan time-out ETA sensor
       description: De sensor die de tijd geeft tot de time-out licht-aan verstrijkt.
@@ -45,6 +45,13 @@ condition:
 - condition: numeric_state
   entity_id: !input licht_uit_timer_eta_sensor
   below: '0'
+- condition: state
+  entity_id: !input pir_sensor_motion
+  state: "off"
+  for:
+    hours: 0
+    minutes: 0
+    seconds: !input no_motion_delay
 action:
 - service: light.turn_off
   data: {}
